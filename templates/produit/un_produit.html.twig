@@ -2,22 +2,19 @@
 
 {% block body %}
 
+
 <div class="example-wrapper">
-    <h1>Liste des Produits </h1>
-    {% if is_granted('ROLE_ADMIN') %}
-        {{form(form)}}
-    {% endif %}
+    <h1>{{ product.nom}} </h1>
     <div class="container">
-    {% for product in products %}
-        <div >
             <div class="card-body">
                 <h5 class="card-title">{{ product.nom }}</h5>
                 <p class="card-text">{{ product.description }}</p>
                 <img src="{{asset('/uploads/'~ product.photo)}}" style="max-width:100px;">
-                <a href="{{ path('app_un_produit', {'id': product.id}) }}" class="btn btn-primary">Info</a>
             </div>
-        </div>
-    {% endfor %}
     </div>
+    {% if is_granted('ROLE_ADMIN') %}
+        {{form(form)}}
+    {% endif %}
 </div>
+
 {% endblock %}

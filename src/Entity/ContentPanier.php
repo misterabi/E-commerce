@@ -19,15 +19,15 @@ class ContentPanier
     #[ORM\ManyToMany(targetEntity: Produit::class, inversedBy: 'contentPaniers')]
     private Collection $Produit;
 
-    #[ORM\OneToOne(inversedBy: 'contentPanier', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Panier $Panier = null;
 
     #[ORM\Column]
     private ?int $Quantite = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $Date = null;
+
+    #[ORM\ManyToOne(inversedBy: 'contentPaniers')]
+    private ?Panier $Panier = null;
 
     public function __construct()
     {
@@ -63,17 +63,6 @@ class ContentPanier
         return $this;
     }
 
-    public function getPanier(): ?Panier
-    {
-        return $this->Panier;
-    }
-
-    public function setPanier(Panier $Panier): self
-    {
-        $this->Panier = $Panier;
-
-        return $this;
-    }
 
     public function getQuantite(): ?int
     {
@@ -95,6 +84,18 @@ class ContentPanier
     public function setDate(\DateTimeInterface $Date): self
     {
         $this->Date = $Date;
+
+        return $this;
+    }
+
+    public function getPanier(): ?Panier
+    {
+        return $this->Panier;
+    }
+
+    public function setPanier(?Panier $Panier): self
+    {
+        $this->Panier = $Panier;
 
         return $this;
     }

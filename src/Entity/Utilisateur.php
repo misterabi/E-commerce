@@ -35,8 +35,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 100)]
     private ?string $Prenom = null;
 
-    #[ORM\OneToOne(mappedBy: 'Utilisateur', cascade: ['persist', 'remove'])]
-    private ?Panier $Panier = null;
+    #[ORM\ManyToOne(inversedBy: 'Utilisateur')]
+    private ?Panier $panier = null;
+
 
     public function getId(): ?int
     {
@@ -134,18 +135,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPanier(): ?Panier
     {
-        return $this->Panier;
+        return $this->panier;
     }
 
-    public function setPanier(Panier $Panier): self
+    public function setPanier(?Panier $panier): self
     {
-        // set the owning side of the relation if necessary
-        if ($Panier->getUtilisateur() !== $this) {
-            $Panier->setUtilisateur($this);
-        }
-
-        $this->Panier = $Panier;
+        $this->panier = $panier;
 
         return $this;
     }
+
 }

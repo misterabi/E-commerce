@@ -7,13 +7,25 @@
     <h1>{{ product.nom}} </h1>
     <div class="container">
             <div class="card-body">
-                <h5 class="card-title">{{ product.nom }}</h5>
+                <p> Quantité : {{ product.Stock}}</p>
+                <p> Prix : {{ product.prix }} €</p>
+
                 <p class="card-text">{{ product.description }}</p>
                 <img src="{{asset('/uploads/'~ product.photo)}}" style="max-width:100px;">
+                {{form(formAjouteProduit)}}
             </div>
+            <div>
+            </div>
+            
+
     </div>
     {% if is_granted('ROLE_ADMIN') %}
         {{form(form)}}
+
+        <form action="{{ path('app_delete_produit', {'id': product.id}) }}">
+            <button class="btn btn-danger" type="submit">Supprimer</button>
+        </form>
+
     {% endif %}
 </div>
 

@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\ContentPanier;
 use App\Entity\Produit;
+use App\Form\AjoutProduitType;
 use App\Form\ProduitType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,18 +66,79 @@ class ProduitController extends AbstractController
     {
         if($product === null){
             $this->addFlash('danger','Le produit n\'existe pas');
-            return $this->redirectToRoute('app_app_produit');
+            return $this->redirectToRoute('app_produit');
         }
 
+        //ajoute d'un produit dans le panier
+        $ContentPanier = new contentPanier();
+        $formAjouteProduit = $this->createForm(AjoutProduitType::class, $ContentPanier);
+        $formAjouteProduit->handleRequest($request);
+        if($formAjouteProduit->isSubmitted() && $formAjouteProduit->isValid()){
+            $em->persist($product); 
+            $em->flush(); 
+            return $this->redirectToRoute('app_ajouter_produit',
+            [
+                "id" => $product->getId(),
+                "Quantite" => $formAjouteProduit->get('quantite')->getData()
+            ]
+        );
+        }
+
+        //mise à jours d'une produit par un ADMIN
         $form = $this->createForm(ProduitType::class, $product);
         $form->handleRequest($request); 
         if($form->isSubmitted() && $form->isValid()){
             $em->persist($product); 
             $em->flush(); 
         }
+
         return $this->render('produit/un_produit.html.twig', [
             "form" => $form->createView(),
+            "formAjouteProduit" => $formAjouteProduit->createView(),
             "product" => $product
         ]);
+    }
+
+
+    #[Route('/produit/ajouter/{id}/{Quantite}', name: 'app_ajouter_produit')]
+    public function add_produit(Produit $product=null,EntityManagerInterface $em,Request $request,int $Quantite): Response
+    {
+        if($product === null){
+            $this->addFlash('danger','Le produit n\'existe pas');
+            return $this->redirectToRoute('app_produit');
+        }
+
+        $user = $this->getUser();
+        //on recupere le panier courrant de l'utilisateur
+        $LastPanier = $user->getPaniers();
+        $LastPanier = $LastPanier[count($LastPanier)-1];
+
+        $ContentPanier = new ContentPanier();
+        $ContentPanier->setPanier($LastPanier);
+        $ContentPanier->addProduit($product);
+        $ContentPanier->setQuantite($Quantite);
+        $ContentPanier->setDate(new \DateTime());
+        $em->persist($ContentPanier);
+        $em->flush();
+        $this->addFlash('success','Le produit a bien été ajouté au panier');
+        
+        return $this->redirectToRoute('app_produit', [
+            "product" => $product,
+            "panier" => $LastPanier
+        ]);
+    }
+
+    #[Route('/produit/delete/{id}', name: 'app_delete_produit')]
+    public function delete(Produit $product=null,EntityManagerInterface $em): Response
+    {
+        if($product === null){
+            $this->addFlash('danger','Le produit n\'existe pas');
+            return $this->redirectToRoute('app_produit');
+        }
+
+        $em->remove($product); 
+        $em->flush(); 
+        $this->addFlash('success','Le produit a bien été supprimé');
+        return $this->redirectToRoute('app_produit');
     }
 }

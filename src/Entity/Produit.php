@@ -130,4 +130,18 @@ class Produit
 
         return $this;
     }
+
+    #[ORM\PostRemove]
+    public function deleteImage(){
+        //verification que le produit possède une image
+        if($this->Photo !== null){
+            //on supprime l'image
+            unlink(__DIR__.'/../../public/uploads/'.$this->Photo);
+        }
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom;
+    }
 }

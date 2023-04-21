@@ -17,7 +17,7 @@ class Panier
     private ?int $id = null;
 
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE,nullable: true)]
     private ?\DateTimeInterface $DateAchat = null;
 
     #[ORM\Column]
@@ -26,13 +26,13 @@ class Panier
     #[ORM\OneToMany(mappedBy: 'Panier', targetEntity: ContentPanier::class)]
     private Collection $contentPaniers;
 
-    #[ORM\OneToMany(mappedBy: 'panier', targetEntity: Utilisateur::class)]
-    private Collection $Utilisateur;
+    #[ORM\ManyToOne(inversedBy: 'paniers')]
+    private ?Utilisateur $Utilisateur = null;
+
 
     public function __construct()
     {
         $this->contentPaniers = new ArrayCollection();
-        $this->Utilisateur = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -95,35 +95,21 @@ class Panier
         return $this;
     }
 
-    /**
-     * @return Collection<int, Utilisateur>
-     */
-    public function getUtilisateur(): Collection
+    public function getUtilisateur(): ?Utilisateur
     {
         return $this->Utilisateur;
     }
 
-    public function addUtilisateur(Utilisateur $utilisateur): self
+    public function setUtilisateur(?Utilisateur $Utilisateur): self
     {
-        if (!$this->Utilisateur->contains($utilisateur)) {
-            $this->Utilisateur->add($utilisateur);
-            $utilisateur->setPanier($this);
-        }
+        $this->Utilisateur = $Utilisateur;
 
         return $this;
     }
 
-    public function removeUtilisateur(Utilisateur $utilisateur): self
+    public function __toString(): string
     {
-        if ($this->Utilisateur->removeElement($utilisateur)) {
-            // set the owning side to null (unless already changed)
-            if ($utilisateur->getPanier() === $this) {
-                $utilisateur->setPanier(null);
-            }
-        }
-
-        return $this;
+        return $this->id;
     }
-
    
 }

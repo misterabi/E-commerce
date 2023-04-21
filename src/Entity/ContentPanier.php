@@ -21,7 +21,7 @@ class ContentPanier
 
 
     #[ORM\Column]
-    private ?int $Quantite = null;
+    private ?int $Quantite = 0;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $Date = null;
@@ -98,5 +98,10 @@ class ContentPanier
         $this->Panier = $Panier;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id;
     }
 }

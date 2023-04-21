@@ -1,20 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProduitController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+<div class="container">
+    <h1>Profil</h1>
+    <p>Nom : {{ user.nom }}</p>
+    <p>Prénom : {{ user.prenom }}</p>
+    <p>email : {{ user.email }}</p>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/Users/abidesh/Documents/DigitalCampus/M1/symfony/eval/src/Controller/UtilisateurController.php'|file_link(0) }}">src/Controller/UtilisateurController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/Users/abidesh/Documents/DigitalCampus/M1/symfony/eval/templates/produit/index.html.twig'|file_link(0) }}">templates/utilisateur/index.html.twig</a></code></li>
-    </ul>
 </div>
+
+<div class="container">
+    {{form(form)}}
+</div>
+
+<div >
+    
+    {% for panier in historique %}
+        {% if panier.Etat == 1 %}      
+        <div class="container">
+            <p> {{ panier.DateAchat|date('d/m/Y h:m:i') }} </p>
+            <p> {{ panier.id }} </p>
+                {% set total = 0 %}
+                {% for x in contenuePanier %}
+                    {% for contenue in x %}
+                        {% if contenue.panier.id == panier.id %}
+                            {% for product in contenue.Produit %}
+                                {% set total = total + contenue.Quantite * product.Prix %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                <p> total:  {{ total }} </p>
+            </div>
+            <a href="{{ path('app_panier_historique', {'id': panier.id}) }}">voir le panier</a>
+        {% endif %}
+    {% endfor %}
+
+</div> 
 {% endblock %}

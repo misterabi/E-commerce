@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ContentPanier;
+use App\Entity\Panier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +33,7 @@ class PanierController extends AbstractController
 
         return $this->render('panier/index.html.twig', [
             'contenuePanier' => $contenuePanier,
+            "show" => false,
         ]);
     }
     
@@ -46,5 +48,20 @@ class PanierController extends AbstractController
         $em->remove($contentPanier);
         $em->flush();
         return $this->redirectToRoute('app_panier');
+    }
+
+    #[Route('/panier/historique/{id}', name: 'app_panier_historique')]
+    public function historique(Panier $panier,EntityManagerInterface $em):Response
+    {
+        $user = $this->getUser();
+        if($user == null){
+            return $this->redirectToRoute('app_login');
+        }
+        $contenuePanier = $em->getRepository(ContentPanier::class)->findBy(['Panier' => $panier]);
+    
+        return $this->render('panier/index.html.twig', [
+            'contenuePanier' => $contenuePanier,
+            'show' => true,
+        ]);
     }
 }

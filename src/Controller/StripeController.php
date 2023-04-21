@@ -2,17 +2,22 @@
 
 namespace App\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\Validator\Constraints\Date;
 
 class StripeController extends AbstractController
 {
     #[Route('/stripe', name: 'app_stripe')]
     public function index(): Response
     {
+        $user = $this->getUser();
+        if($user == null){
+            return $this->redirectToRoute('app_login');
+        }
         return $this->render('stripe/index.html.twig', [
             'controller_name' => 'StripeController',
         ]);
@@ -69,8 +74,17 @@ class StripeController extends AbstractController
 
 
     #[Route('/stripe/success', name: 'stripe_success')]
-    public function success()
+    public function success(EntityManagerInterface $em)
     {
+        $user = $this->getUser();
+        if($user == null){
+            return $this->redirectToRoute('app_login');
+        }
+        $panier = $user->getPaniers()[$user->getPaniers()->count()-1];
+        $panier->setEtat(true);
+        $panier->setDateAchat(new \DateTime());
+        $em->persist($panier);
+        $em->flush();
         return $this->render('stripe/success.html.twig');
     }
 

@@ -7,12 +7,16 @@
         <div class="card" style="width: 18rem;">
             {% for product in produit.Produit %}
                 <p>{{ product.nom }} : Quantite {{ produit.Quantite }} pour {{product.Prix}}$ / totale :{{produit.Quantite * product.Prix}} $</p>
-                <a href="{{ path('app_panier_remove', {'id': produit.id}) }}">Supprimer</a>
+                {% if show != 1 %}
+                    <a href="{{ path('app_panier_remove', {'id': produit.id}) }}">Supprimer</a>
+                {% endif %}
                 {% set total = total + produit.Quantite * product.Prix %}
             {% endfor %}
         </div>
     {% endfor %}
     <p>totale : {{ total }} $</p>
-    <a href="{{ path('app_stripe') }}">Payer</a>
+    {% if show!=1 %}
+        <a href="{{ path('app_stripe') }}">Payer</a>
+    {% endif %}
 </div>
 {% endblock %}

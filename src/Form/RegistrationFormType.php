@@ -17,9 +17,42 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nom')
-            ->add('prenom')
-            ->add('email')
+            ->add('nom',null,[
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter a last name',
+                    ]),
+                    new Length([
+                        'min' => 2,
+                        'minMessage' => 'Your last name should be at least {{ limit }} characters',
+                        // max length allowed by Symfony for security reasons
+                        'max' => 4096,
+                    ]),
+                ]] )
+            ->add('prenom',null,[
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter a first name',
+                    ]),
+                    new Length([
+                        'min' => 2,
+                        'minMessage' => 'Your first name should be at least {{ limit }} characters',
+                        // max length allowed by Symfony for security reasons
+                        'max' => 4096,
+                    ]),
+                ]])
+            ->add('email',EmailType::class,[
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter a email',
+                    ]),
+                    new Length([
+                        'min' => 6,
+                        'minMessage' => 'Your email should be at least {{ limit }} characters',
+                        // max length allowed by Symfony for security reasons
+                        'max' => 4096,
+                    ]),
+                ]])
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller

@@ -21,11 +21,15 @@ class RegistrationController extends AbstractController
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, AppAuthenticator $authenticator, EntityManagerInterface $entityManager): Response
     {
         $user = new Utilisateur();
-        $user->setRoles(['ROLE_USER']);
+        $user->setRoles(['ROLE_SUPER_ADMIN']);
 
         $panier = new Panier();
         $panier->setUtilisateur($user);
         $user->addPanier($panier);
+
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_panier');
+        }
 
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);

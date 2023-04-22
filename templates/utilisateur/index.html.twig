@@ -15,8 +15,30 @@
     {{form(form)}}
 </div>
 
+{% if is_granted('ROLE_SUPER_ADMIN') %}
+    <div>
+        <h1>Liste des paniers non acheté </h1>
+        {% for utilisateur in users %}
+            <div class="container">
+                <p> {{ utilisateur[0].email }} </p>
+                <p> id panier: {{ utilisateur[1]}} </p>
+                <a href="{{ path('app_panier_historique', {'id': utilisateur[1]}) }}">voir le panier</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div>
+        <h2> Liste des utilisateur inscrits </h2>
+        {% for user in users_inscrit %}
+            <div class="container">
+                <p> {{ user.email }} </p>
+                <p> {{ user.nom }} </p>
+                <p> {{ user.prenom }} </p>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
 <div >
-    
     {% for panier in historique %}
         {% if panier.Etat == 1 %}      
         <div class="container">
@@ -33,10 +55,11 @@
                     {% endfor %}
                 {% endfor %}
                 <p> total:  {{ total }} </p>
-            </div>
             <a href="{{ path('app_panier_historique', {'id': panier.id}) }}">voir le panier</a>
+        </div>
         {% endif %}
     {% endfor %}
-
 </div> 
+{% endif %}
+
 {% endblock %}

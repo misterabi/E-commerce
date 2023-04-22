@@ -11,15 +11,15 @@ use Symfony\Component\Validator\Constraints\Date;
 
 class StripeController extends AbstractController
 {
-    #[Route('/stripe', name: 'app_stripe')]
-    public function index(): Response
+    #[Route('/stripe/{somme}', name: 'app_stripe')]
+    public function index(int $somme): Response
     {
         $user = $this->getUser();
         if($user == null){
             return $this->redirectToRoute('app_login');
         }
         return $this->render('stripe/index.html.twig', [
-            'controller_name' => 'StripeController',
+           "total" => $somme,
         ]);
     }
 
@@ -49,9 +49,6 @@ class StripeController extends AbstractController
         $total = $total * 100;
 
         try {
-            //calcule du panier  (parcours des produits du panier et multiplication du prix unitaire par la quantité)
-
-            // Create a PaymentIntent with amount and currency
             $paymentIntent = \Stripe\PaymentIntent::create([
                 'amount' => $total,
                 'currency' => 'eur',

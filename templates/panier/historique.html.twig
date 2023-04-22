@@ -1,4 +1,6 @@
+
 {% extends 'base.html.twig' %}
+
 {% block body %}
 
 <div class="container">
@@ -7,16 +9,11 @@
         <div class="card" style="width: 18rem;">
             {% for product in produit.Produit %}
                 <p>{{ product.nom }} : Quantite {{ produit.Quantite }} pour {{product.Prix}}$ / totale :{{produit.Quantite * product.Prix}} $</p>
-                {% if show != 1 %}
-                    <a href="{{ path('app_panier_remove', {'id': produit.id}) }}">Supprimer</a>
-                {% endif %}
                 {% set total = total + produit.Quantite * product.Prix %}
             {% endfor %}
         </div>
     {% endfor %}
     <p>totale : {{ total }} $</p>
-    {% if show!=1 %}
-        <a href="{{ path('app_stripe',{'somme': total}) }}">Payer</a>
-    {% endif %}
 </div>
+
 {% endblock %}

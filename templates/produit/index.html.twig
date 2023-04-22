@@ -4,7 +4,7 @@
 
 <div class="example-wrapper">
     <h1>Liste des Produits </h1>
-    {% if is_granted('ROLE_ADMIN') %}
+    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') ) %}
         {{form(form)}}
     {% endif %}
     <div class="container">

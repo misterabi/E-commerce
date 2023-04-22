@@ -73,6 +73,7 @@ class ProduitController extends AbstractController
         $ContentPanier = new contentPanier();
         $formAjouteProduit = $this->createForm(AjoutProduitType::class, $ContentPanier);
         $formAjouteProduit->handleRequest($request);
+        
         if($formAjouteProduit->isSubmitted() && $formAjouteProduit->isValid()){
             $em->persist($product); 
             $em->flush(); 

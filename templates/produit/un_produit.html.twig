@@ -12,14 +12,18 @@
 
                 <p class="card-text">{{ product.description }}</p>
                 <img src="{{asset('/uploads/'~ product.photo)}}" style="max-width:100px;">
-                {{form(formAjouteProduit)}}
+                
+                {# if user connecte #}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    {{form(formAjouteProduit)}}
+                {% endif %}
             </div>
             <div>
             </div>
             
 
     </div>
-    {% if is_granted('ROLE_ADMIN') %}
+    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')) %}
         {{form(form)}}
 
         <form action="{{ path('app_delete_produit', {'id': product.id}) }}">

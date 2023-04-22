@@ -40,6 +40,10 @@ class PanierController extends AbstractController
     #[Route('/panier/remove/{id}', name: 'app_panier_remove')]
     public function removeProduct(ContentPanier $contentPanier,EntityManagerInterface $em): Response
     {
+        $user = $this->getUser();
+        if($user == null){
+            return $this->redirectToRoute('app_login');
+        }
         if($contentPanier === null){
             $this->addFlash('danger','Le produit n\'existe pas');
             return $this->redirectToRoute('app_panier');

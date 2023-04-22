@@ -1,0 +1,37 @@
+Nom: Nom
+Description: Description
+Prix: Prix
+Stock: Stock
+Photo (JPG,JPEG,PNG): Photo (JPG,JPEG,PNG)
+Save : Sauvegarder
+
+Product:
+  List: Liste des produits
+  Delete: Supprimer
+  Edit: Modifier
+
+
+Cart:
+  Payement: Payer
+
+
+User:
+  List of cart : Liste de panier
+  List of user : Liste d'utilisateur
+
+First Name: Prénom
+Last Name: Nom
+Email: Email
+Password: Mot de passe
+
+
+flash:
+  success:
+      AddProductToCart : The product have been add to the cart !
+      AddProduct : Le produit a bien été ajouté à la liste des produits!
+      UpdateProduct : The product have been edit !
+      RemoveProduct : Le produit a bien été retiré du panier !
+  failed:
+    UndifinedProduct: Le produit n\'existe pas.
+    UplaodFile: Le fichier n\'a pas pu être téléchargé.
+  warning:

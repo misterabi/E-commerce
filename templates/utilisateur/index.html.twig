@@ -17,7 +17,7 @@
 
 {% if is_granted('ROLE_SUPER_ADMIN') %}
     <div>
-        <h1>Liste des paniers non acheté </h1>
+        <h1>{{'User.List of cart'|trans}}</h1>
         {% for utilisateur in users %}
             <div class="container">
                 <p> {{ utilisateur[0].email }} </p>
@@ -28,7 +28,7 @@
     </div>
 
     <div>
-        <h2> Liste des utilisateur inscrits </h2>
+        <h2> {{'User.List of user'|trans}}</h2>
         {% for user in users_inscrit %}
             <div class="container">
                 <p> {{ user.email }} </p>

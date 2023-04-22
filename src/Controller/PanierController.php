@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PanierController extends AbstractController
 {
@@ -46,20 +47,20 @@ class PanierController extends AbstractController
     }
     
     #[Route('/panier/remove/{id}', name: 'app_panier_remove')]
-    public function removeProduct(ContentPanier $contentPanier,EntityManagerInterface $em): Response
+    public function removeProduct(ContentPanier $contentPanier,EntityManagerInterface $em,TranslatorInterface $trans): Response
     {
         $user = $this->getUser();
         if($user == null){
             return $this->redirectToRoute('app_login');
         }
         if($contentPanier === null){
-            $this->addFlash('danger','Le produit n\'existe pas');
+            $this->addFlash('danger',$trans->trans("flash.failed.UndifinedProduct"));
             return $this->redirectToRoute('app_panier');
         }
 
         $em->remove($contentPanier);
         $em->flush();
-        $this->addFlash('danger','Le produit a bien été retiré du panier');
+        $this->addFlash('danger',$trans->trans("flash.success.RemoveProduct"));
         return $this->redirectToRoute('app_panier');
     }
 

@@ -16,15 +16,15 @@
             {% for product in produit.Produit %}
                 <p>{{ product.nom }} : Quantite {{ produit.Quantite }} pour {{product.Prix}}$ / totale :{{produit.Quantite * product.Prix}} $</p>
                 {% if show != 1 %}
-                    <a href="{{ path('app_panier_remove', {'id': produit.id}) }}">Supprimer</a>
+                    <a href="{{ path('app_panier_remove', {'id': produit.id}) }}">{{'Product.Delete'|trans}}</a>
                 {% endif %}
                 {% set total = total + produit.Quantite * product.Prix %}
             {% endfor %}
         </div>
     {% endfor %}
-    <p>totale : {{ total }} $</p>
+    <p>total : {{ total }} $</p>
     {% if (show!=1  and total > 0)%}
-        <a href="{{ path('app_stripe',{'somme': total}) }}">Payer</a>
+        <a href="{{ path('app_stripe',{'somme': total}) }}">{{'Cart.Payement'|trans}}</a>
     {% endif %}
 </div>
 {% endblock %}

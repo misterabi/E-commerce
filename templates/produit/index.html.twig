@@ -12,7 +12,7 @@
         </div>
     {% endfor %}
 
-    <h1>Liste des Produits </h1>
+    <h1> {{ 'Product.List'|trans}} </h1>
     {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') ) %}
         {{form(form)}}
     {% endif %}

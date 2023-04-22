@@ -14,11 +14,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProduitController extends AbstractController
 {
     #[Route('/', name: 'app_produit')]
-    public function index(EntityManagerInterface $em,Request $request,SluggerInterface $slugger): Response
+    public function index(EntityManagerInterface $em,Request $request,SluggerInterface $slugger,TranslatorInterface $trans): Response
     {
         $product = new Produit();
         $form = $this->createForm(ProduitType::class, $product);
@@ -42,14 +43,14 @@ class ProduitController extends AbstractController
                     );
                 } catch (FileException $e) {
                     // ... handle exception if something happens during file upload
-                    $this->addFlash('warning','Erreur lors de l\'upload de l\'image');
+                    $this->addFlash('warning',$trans->trans("flash.failed.UplaodFile"));
                 }
 
                 // updates the 'imageFilename' property to store the PDF file name
                 // instead of its contents
                 $product->setPhoto($newFilename);
             }
-            $this->addFlash('success','Le produit a bien été ajouté a la liste des produits');
+            $this->addFlash('success',$trans->trans('flash.success.AddProduct'));
             $em->persist($product);
             $em->flush();
         }
@@ -62,10 +63,10 @@ class ProduitController extends AbstractController
     }
 
     #[Route('/produit/{id}', name: 'app_un_produit')]
-    public function Produit(Produit $product=null,EntityManagerInterface $em,Request $request): Response
+    public function Produit(Produit $product=null,EntityManagerInterface $em,Request $request,TranslatorInterface $trans): Response
     {
         if($product === null){
-            $this->addFlash('danger','Le produit n\'existe pas');
+            $this->addFlash('danger',$trans->trans('produit.UndifinedProduct'));
             return $this->redirectToRoute('app_produit');
         }
 
@@ -77,7 +78,7 @@ class ProduitController extends AbstractController
         if($formAjouteProduit->isSubmitted() && $formAjouteProduit->isValid()){
             $em->persist($product); 
             $em->flush(); 
-            $this->addFlash('success','Le produit a bien été ajouté au panier');
+            $this->addFlash('success',$trans->trans('flash.success.AddProduct'));
             return $this->redirectToRoute('app_ajouter_produit',
             [
                 "id" => $product->getId(),
@@ -94,7 +95,7 @@ class ProduitController extends AbstractController
             if($form->isSubmitted() && $form->isValid()){
                 $em->persist($product); 
                 $em->flush(); 
-                $this->addFlash('success','Le produit a bien été mise à jour');
+                $this->addFlash('success',$trans->trans('flash.success.UpdateProduct'));
 
             }
         }
@@ -108,10 +109,10 @@ class ProduitController extends AbstractController
 
 
     #[Route('/produit/ajouter/{id}/{Quantite}', name: 'app_ajouter_produit')]
-    public function add_produit(Produit $product=null,EntityManagerInterface $em,Request $request,int $Quantite): Response
+    public function add_produit(Produit $product=null,EntityManagerInterface $em,int $Quantite,TranslatorInterface $trans): Response
     {
         if($product === null){
-            $this->addFlash('danger','Le produit n\'existe pas');
+            $this->addFlash('danger',$trans->trans('flash.failed.UndifinedProduct'));
             return $this->redirectToRoute('app_produit');
         }
 
@@ -135,16 +136,16 @@ class ProduitController extends AbstractController
     }
 
     #[Route('/produit/delete/{id}', name: 'app_delete_produit')]
-    public function delete(Produit $product=null,EntityManagerInterface $em): Response
+    public function delete(Produit $product=null,EntityManagerInterface $em,TranslatorInterface $trans): Response
     {
         if($product === null){
-            $this->addFlash('danger','Le produit n\'existe pas');
+            $this->addFlash('danger',$trans->trans('flash.failed.UndifinedProduct'));
             return $this->redirectToRoute('app_produit');
         }
 
         $em->remove($product); 
         $em->flush(); 
-        $this->addFlash('warning','Le produit a bien été supprimé');
+        $this->addFlash('warning',$trans->trans('flash.success.RemoveProduct'));
         return $this->redirectToRoute('app_produit');
     }
 }

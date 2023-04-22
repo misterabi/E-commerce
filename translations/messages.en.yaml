@@ -1,0 +1,35 @@
+Nom: Name
+Description: Description
+Prix: Price
+Stock: Stock
+Photo (JPG,JPEG,PNG): Photo (JPG,JPEG,PNG)
+Save : Save	 
+
+
+Product:
+  List: List of products
+  Delete: Delete
+  Edit: Edit
+
+Cart:
+  Payement: Purchase
+
+User:
+  List of cart : List of cart
+  List of user : List of user
+
+First Name: First Name
+Last Name: Last Name
+Email: Email
+Password: Password
+
+flash:
+  success:
+    AddProductToCart : The product have been add to the cart !
+    AddProduct : The product have been add to the list of product !
+    UpdateProduct : The product have been edit !
+    RemoveProduct : The product have been remove from the cart !
+  failed:
+      UplaodFile: The file can't be upload.
+      UndifinedProduct: The product doesn't exist.
+  warning:

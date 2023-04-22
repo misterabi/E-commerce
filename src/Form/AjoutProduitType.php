@@ -21,7 +21,7 @@ class AjoutProduitType extends AbstractType
                     'step' => 1,
                 ],
             ])
-            ->add('Ajouter',SubmitType::class)
+            ->add('Add',SubmitType::class)
 
         ;
     }

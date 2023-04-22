@@ -20,7 +20,7 @@ class UtilisateurType extends AbstractType
     {
         $builder
             ->add('Nom',null,[
-                "label" => "Nom :",
+                "label" => "Last Name",
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a name',
@@ -36,7 +36,7 @@ class UtilisateurType extends AbstractType
             ->add('Prenom',
                 null,
                 [
-                    "label" => "Prenom :",
+                    "label" => "First Name",
                     'constraints' => [
                         new NotBlank([
                             'message' => 'Please enter a first name',
@@ -52,7 +52,7 @@ class UtilisateurType extends AbstractType
             )
             
             ->add('email',EmailType::class,[
-                "label" => "Email :",
+                "label" => "Email",
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a email',

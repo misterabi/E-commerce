@@ -49,7 +49,7 @@ class ProduitController extends AbstractController
                 // instead of its contents
                 $product->setPhoto($newFilename);
             }
-
+            $this->addFlash('success','Le produit a bien été ajouté a la liste des produits');
             $em->persist($product);
             $em->flush();
         }
@@ -69,7 +69,7 @@ class ProduitController extends AbstractController
             return $this->redirectToRoute('app_produit');
         }
 
-        //ajoute d'un produit dans le panier
+        //formulaire pour l'ajoute d'un produit au panier avec sa quanité
         $ContentPanier = new contentPanier();
         $formAjouteProduit = $this->createForm(AjoutProduitType::class, $ContentPanier);
         $formAjouteProduit->handleRequest($request);
@@ -77,6 +77,7 @@ class ProduitController extends AbstractController
         if($formAjouteProduit->isSubmitted() && $formAjouteProduit->isValid()){
             $em->persist($product); 
             $em->flush(); 
+            $this->addFlash('success','Le produit a bien été ajouté au panier');
             return $this->redirectToRoute('app_ajouter_produit',
             [
                 "id" => $product->getId(),
@@ -85,12 +86,17 @@ class ProduitController extends AbstractController
         );
         }
 
-        //mise à jours d'une produit par un ADMIN
-        $form = $this->createForm(ProduitType::class, $product);
-        $form->handleRequest($request); 
-        if($form->isSubmitted() && $form->isValid()){
-            $em->persist($product); 
-            $em->flush(); 
+        if( $this->isGranted('ROLE_ADMIN') or $this->isGranted('ROLE_SUPER_ADMIN')){
+
+            //mise à jours d'une produit par un ADMIN
+            $form = $this->createForm(ProduitType::class, $product);
+            $form->handleRequest($request); 
+            if($form->isSubmitted() && $form->isValid()){
+                $em->persist($product); 
+                $em->flush(); 
+                $this->addFlash('success','Le produit a bien été mise à jour');
+
+            }
         }
 
         return $this->render('produit/un_produit.html.twig', [
@@ -121,7 +127,6 @@ class ProduitController extends AbstractController
         $ContentPanier->setDate(new \DateTime());
         $em->persist($ContentPanier);
         $em->flush();
-        $this->addFlash('success','Le produit a bien été ajouté au panier');
         
         return $this->redirectToRoute('app_produit', [
             "product" => $product,
@@ -139,7 +144,7 @@ class ProduitController extends AbstractController
 
         $em->remove($product); 
         $em->flush(); 
-        $this->addFlash('success','Le produit a bien été supprimé');
+        $this->addFlash('warning','Le produit a bien été supprimé');
         return $this->redirectToRoute('app_produit');
     }
 }

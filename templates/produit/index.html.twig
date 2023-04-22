@@ -3,6 +3,15 @@
 {% block body %}
 
 <div class="example-wrapper">
+
+    {% for types,messages in app.flashes %}
+        <div class="alert alert-{{types}}">
+            {% for message in messages %}
+                <p>{{message}}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
     <h1>Liste des Produits </h1>
     {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') ) %}
         {{form(form)}}

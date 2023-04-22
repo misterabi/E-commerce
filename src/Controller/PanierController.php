@@ -19,9 +19,17 @@ class PanierController extends AbstractController
         if($user == null){
             return $this->redirectToRoute('app_login');
         }
+        //Si il a pas de panier on en cree un
+        if($user->getPaniers() == null){
+            $panier = new Panier();
+            $panier->setUtilisateur($user);
+            $em->persist($panier);
+            $em->flush();
+        }
+
         $panier = $user->getPaniers()[$user->getPaniers()->count()-1];
 
-        //cree un nouveau panier
+        //cree un nouveau panier si le panier precedent est cloturer
         if($panier->isEtat() == true){
             $panier = new Panier();
             $panier->setUtilisateur($user);
@@ -51,6 +59,7 @@ class PanierController extends AbstractController
 
         $em->remove($contentPanier);
         $em->flush();
+        $this->addFlash('danger','Le produit a bien été retiré du panier');
         return $this->redirectToRoute('app_panier');
     }
 

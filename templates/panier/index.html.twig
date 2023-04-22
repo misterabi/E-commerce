@@ -2,6 +2,14 @@
 {% block body %}
 
 <div class="container">
+    {% for types,messages in app.flashes %}
+        <div class="alert alert-{{types}}">
+            {% for message in messages %}
+                <p>{{message}}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    
     {% set total = 0 %}
     {% for produit in contenuePanier %}
         <div class="card" style="width: 18rem;">
@@ -15,7 +23,7 @@
         </div>
     {% endfor %}
     <p>totale : {{ total }} $</p>
-    {% if show!=1 %}
+    {% if (show!=1  and total > 0)%}
         <a href="{{ path('app_stripe',{'somme': total}) }}">Payer</a>
     {% endif %}
 </div>

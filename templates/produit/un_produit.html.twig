@@ -14,7 +14,7 @@
                 <img src="{{asset('/uploads/'~ product.photo)}}" style="max-width:100px;">
                 
                 {# if user connecte #}
-                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                {% if (is_granted('IS_AUTHENTICATED_FULLY') and product.Stock > 0)%}
                     {{form(formAjouteProduit)}}
                 {% endif %}
             </div>

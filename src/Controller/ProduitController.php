@@ -21,10 +21,11 @@ class ProduitController extends AbstractController
     #[Route('/', name: 'app_produit')]
     public function index(EntityManagerInterface $em,Request $request,SluggerInterface $slugger,TranslatorInterface $trans): Response
     {
+        $user = $this->getUser();
         $product = new Produit();
         $form = $this->createForm(ProduitType::class, $product);
         $form->handleRequest($request); 
-        if($form->isSubmitted() && $form->isValid()){
+        if($form->isSubmitted() && $form->isValid() && $user->getRoles()[0] == "ROLE_ADMIN"){
             $imageFile = $form->get('photo')->getData();
 
             // this condition is needed because the 'brochure' field is not required
@@ -54,7 +55,7 @@ class ProduitController extends AbstractController
             $em->persist($product);
             $em->flush();
         }
-
+        //produit avec un stock > 0
         $products = $em->getRepository(Produit::class)->findAll();
         return $this->render('produit/index.html.twig', [
             "form" => $form->createView(),

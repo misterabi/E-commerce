@@ -22,7 +22,7 @@ First Name: First Name
 Last Name: Last Name
 Email: Email
 Password: Password
-
+Update : Update
 flash:
   success:
     AddProductToCart : The product have been add to the cart !

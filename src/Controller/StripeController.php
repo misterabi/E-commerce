@@ -11,15 +11,14 @@ use Symfony\Component\Validator\Constraints\Date;
 
 class StripeController extends AbstractController
 {
-    #[Route('/stripe/{somme}', name: 'app_stripe')]
-    public function index(int $somme): Response
+    #[Route('/stripe', name: 'app_stripe')]
+    public function index(): Response
     {
         $user = $this->getUser();
         if($user == null){
             return $this->redirectToRoute('app_login');
         }
         return $this->render('stripe/index.html.twig', [
-           "total" => $somme,
         ]);
     }
 
@@ -76,6 +75,14 @@ class StripeController extends AbstractController
         $user = $this->getUser();
         if($user == null){
             return $this->redirectToRoute('app_login');
+        }
+        //update de la quantité des produits
+        foreach($user->getPaniers()[$user->getPaniers()->count()-1]->getContentPaniers() as $contentPanier){
+            foreach($contentPanier->getProduit() as $produit){
+
+                $produit->setStock($produit->getStock() - $contentPanier->getQuantite());
+                $em->persist($produit);
+            }
         }
         $panier = $user->getPaniers()[$user->getPaniers()->count()-1];
         $panier->setEtat(true);

@@ -25,6 +25,10 @@
     <p>total : {{ total }} $</p>
     {% if (show!=1  and total > 0)%}
         <a href="{{ path('app_stripe',{'somme': total}) }}">{{'Cart.Payement'|trans}}</a>
+    {% else %}
+        <p>Votre Panier est vide !</p>
+        <p>Veuillez ajouter des produits</p> 
+        
     {% endif %}
 </div>
 {% endblock %}

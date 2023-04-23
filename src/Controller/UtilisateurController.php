@@ -4,15 +4,18 @@ namespace App\Controller;
 
 use App\Entity\Utilisateur;
 use App\Form\UtilisateurType;
+use App\Form\UtilisateurUpdateType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UtilisateurController extends AbstractController
 {
     #[Route('/utilisateur', name: 'app_utilisateur')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em,Request $request,TranslatorInterface $trans): Response
     {
         $user = $this->getUser();
         $users = [];
@@ -33,10 +36,7 @@ class UtilisateurController extends AbstractController
             usort($users_inscrit, function($a, $b) {
                 return $a->getId() <=> $b->getId();
             });
-
-
         }
-        $form = $this->createForm(UtilisateurType::class);
 
         $historique = $user->getPaniers();
         $lstContenuePanier = [];
@@ -44,6 +44,13 @@ class UtilisateurController extends AbstractController
             array_push($lstContenuePanier,$contenue->getContentPaniers());
         }
 
+        $form = $this->createForm(UtilisateurUpdateType::class,$user);
+        $form->handleRequest($request); 
+        if($form->isSubmitted() && $form->isValid()){
+            $em->persist($user); 
+            $em->flush(); 
+            $this->addFlash('success',$trans->trans('flash.success.UpdateProduct'));
+        }
 
         return $this->render('utilisateur/index.html.twig', [
             "form" => $form->createView(),

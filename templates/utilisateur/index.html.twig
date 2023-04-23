@@ -5,15 +5,29 @@
 
 <div class="container">
     <h1>Profil</h1>
-    <p>Nom : {{ user.nom }}</p>
-    <p>Prénom : {{ user.prenom }}</p>
-    <p>email : {{ user.email }}</p>
+    <p>{{'Last Name'|trans}} : {{ user.nom }}</p>
+    <p>{{'First Name'|trans}} : {{ user.prenom }}</p>
+    <p>{{'Email'|trans}} : {{ user.email }}</p>
 
 </div>
+
 
 <div class="container">
-    {{form(form)}}
+    {{ form_start(form) }}
+
+    <p>{{'Last Name'|trans}}  : {{ form_widget(form.Nom,{ 'value': user.nom}) }} <p/>
+    <p>{{'First Name'|trans}} : {{ form_widget(form.Prenom,{ 'value': user.prenom}) }} </p>
+    <p>{{'Email'|trans}} :      {{ form_widget(form.email,{ 'value': user.email}) }} </p>
+    <p>{{ form_widget(form.Update) }} </p>
+    {{ form_end(form) }}
 </div>
+{% for types,messages in app.flashes %}
+    <div class="alert alert-{{types}}">
+        {% for message in messages %}
+            <p>{{message}}</p>
+        {% endfor %}
+    </div>
+{% endfor %}
 
 {% if is_granted('ROLE_SUPER_ADMIN') %}
     <div>

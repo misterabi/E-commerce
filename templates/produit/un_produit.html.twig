@@ -2,27 +2,38 @@
 
 {% block body %}
 
+{% for types,messages in app.flashes %}
+    <div class="alert alert-{{types}}">
+        {% for message in messages %}
+            <p>{{message}}</p>
+        {% endfor %}
+    </div>
+{% endfor %}
 
-<div class="example-wrapper">
-    <h1>{{ product.nom}} </h1>
-    <div class="container">
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <img src="{{asset('/uploads/'~ product.photo)}}" style="max-width:300px;">
+        </div>
+        <div class="col order-5 border">
+            <h1 class="text-center">{{ product.nom}} </h1>
             <div class="card-body">
+                <h5 class="card-text">{{ product.description }}</h5>
                 <p> Quantité : {{ product.Stock}}</p>
-                <p> Prix : {{ product.prix }} €</p>
-
-                <p class="card-text">{{ product.description }}</p>
-                <img src="{{asset('/uploads/'~ product.photo)}}" style="max-width:100px;">
-                
-                {# if user connecte #}
+                <p> Prix : {{ product.prix }} €</p>                
                 {% if (is_granted('IS_AUTHENTICATED_FULLY') and product.Stock > 0)%}
                     {{form(formAjouteProduit)}}
                 {% endif %}
             </div>
             <div>
-            </div>
-            
-
+        </div>
+        </div>
     </div>
+
+    
+</div>
+
+<div class="container">
     {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')) %}
         {{form(form)}}
 
@@ -32,5 +43,6 @@
 
     {% endif %}
 </div>
+
 
 {% endblock %}

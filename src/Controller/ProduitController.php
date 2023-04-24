@@ -27,35 +27,24 @@ class ProduitController extends AbstractController
         $form->handleRequest($request); 
         if($form->isSubmitted() && $form->isValid() && $user->getRoles()[0] == "ROLE_ADMIN"){
             $imageFile = $form->get('photo')->getData();
-
-            // this condition is needed because the 'brochure' field is not required
-            // so the PDF file must be processed only when a file is uploaded
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                // this is needed to safely include the file name as part of the URL
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
-
-                // Move the file to the directory where brochures are stored
                 try {
                     $imageFile->move(
                         $this->getParameter('upload_directory'),
                         $newFilename
                     );
                 } catch (FileException $e) {
-                    // ... handle exception if something happens during file upload
                     $this->addFlash('warning',$trans->trans("flash.failed.UplaodFile"));
                 }
-
-                // updates the 'imageFilename' property to store the PDF file name
-                // instead of its contents
                 $product->setPhoto($newFilename);
             }
             $this->addFlash('success',$trans->trans('flash.success.AddProduct'));
             $em->persist($product);
             $em->flush();
         }
-        //produit avec un stock > 0
         $products = $em->getRepository(Produit::class)->findAll();
         return $this->render('produit/index.html.twig', [
             "form" => $form->createView(),
@@ -75,11 +64,10 @@ class ProduitController extends AbstractController
         $ContentPanier = new contentPanier();
         $formAjouteProduit = $this->createForm(AjoutProduitType::class, $ContentPanier);
         $formAjouteProduit->handleRequest($request);
+
+        $form = null;
         
-        if($formAjouteProduit->isSubmitted() && $formAjouteProduit->isValid()){
-            $em->persist($product); 
-            $em->flush(); 
-            $this->addFlash('success',$trans->trans('flash.success.AddProduct'));
+        if($formAjouteProduit->isSubmitted() && $formAjouteProduit->isValid()){ 
             return $this->redirectToRoute('app_ajouter_produit',
             [
                 "id" => $product->getId(),
@@ -99,10 +87,11 @@ class ProduitController extends AbstractController
                 $this->addFlash('success',$trans->trans('flash.success.UpdateProduct'));
 
             }
+            $form=$form->createView();
         }
 
         return $this->render('produit/un_produit.html.twig', [
-            "form" => $form->createView(),
+            "form" => $form,
             "formAjouteProduit" => $formAjouteProduit->createView(),
             "product" => $product
         ]);
@@ -110,12 +99,20 @@ class ProduitController extends AbstractController
 
 
     #[Route('/produit/ajouter/{id}/{Quantite}', name: 'app_ajouter_produit')]
-    public function add_produit(Produit $product=null,EntityManagerInterface $em,int $Quantite,TranslatorInterface $trans): Response
+    public function add_produit(Produit $product=null,EntityManagerInterface $em,Request $request,int $Quantite,TranslatorInterface $trans): Response
     {
         if($product === null){
             $this->addFlash('danger',$trans->trans('flash.failed.UndifinedProduct'));
             return $this->redirectToRoute('app_produit');
         }
+        if($Quantite > $product->getStock()){
+            $this->addFlash('danger',$trans->trans('flash.failed.unavailable'));
+            return $this->redirectToRoute('app_un_produit',
+            [
+                "id" => $product->getId()
+            ]);
+        }
+        $this->addFlash('success',$trans->trans('flash.success.AddProduct'));
 
         $user = $this->getUser();
         //on recupere le panier courrant de l'utilisateur
@@ -129,10 +126,12 @@ class ProduitController extends AbstractController
         $ContentPanier->setDate(new \DateTime());
         $em->persist($ContentPanier);
         $em->flush();
+        // $valeurCookie = $request->cookies->get('couleur');
         
         return $this->redirectToRoute('app_produit', [
             "product" => $product,
-            "panier" => $LastPanier
+            "panier" => $LastPanier,
+            // "valeurCookie" => $valeurCookie
         ]);
     }
 

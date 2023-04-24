@@ -20,6 +20,7 @@ class AjoutProduitType extends AbstractType
                     'max' => 100,
                     'step' => 1,
                 ],
+                
             ])
             ->add('Add',SubmitType::class)
 

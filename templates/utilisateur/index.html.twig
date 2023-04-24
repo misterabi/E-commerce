@@ -3,24 +3,29 @@
 
 {% block body %}
 
-<div class="container">
-    <h1>Profil</h1>
+
+<div class="container border">
+    <h1 class="text-center">Profil</h1>
     <p>{{'Last Name'|trans}} : {{ user.nom }}</p>
     <p>{{'First Name'|trans}} : {{ user.prenom }}</p>
     <p>{{'Email'|trans}} : {{ user.email }}</p>
-
+    <div class="text-center">
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
+            <a class="nav-link" href="{{path('app_logout')}}">Déconnexion</a>
+        </button>
+    </div
 </div>
 
-
-<div class="container">
+<div class="container ">
     {{ form_start(form) }}
-
     <p>{{'Last Name'|trans}}  : {{ form_widget(form.Nom,{ 'value': user.nom}) }} <p/>
     <p>{{'First Name'|trans}} : {{ form_widget(form.Prenom,{ 'value': user.prenom}) }} </p>
     <p>{{'Email'|trans}} :      {{ form_widget(form.email,{ 'value': user.email}) }} </p>
     <p>{{ form_widget(form.Update) }} </p>
     {{ form_end(form) }}
 </div>
+
+
 {% for types,messages in app.flashes %}
     <div class="alert alert-{{types}}">
         {% for message in messages %}
@@ -28,6 +33,8 @@
         {% endfor %}
     </div>
 {% endfor %}
+
+<hr></hr>
 
 {% if is_granted('ROLE_SUPER_ADMIN') %}
     <div>
@@ -54,10 +61,12 @@
 {% else %}
 <div >
     {% for panier in historique %}
-        {% if panier.Etat == 1 %}      
-        <div class="container">
-            <p> {{ panier.DateAchat|date('d/m/Y h:m:i') }} </p>
-            <p> {{ panier.id }} </p>
+        {% if panier.Etat == 1 %}     
+        <div class="card mb-3">
+            <div class="card-header">
+                Commande du {{ panier.DateAchat|date('d/m/Y') }} n°{{ panier.id }}
+            </div>
+            <div class="card-body pb-3">
                 {% set total = 0 %}
                 {% for x in contenuePanier %}
                     {% for contenue in x %}
@@ -68,8 +77,13 @@
                         {% endif %}
                     {% endfor %}
                 {% endfor %}
-                <p> total:  {{ total }} </p>
-            <a href="{{ path('app_panier_historique', {'id': panier.id}) }}">voir le panier</a>
+                <h5 class="card-title">total de la commande :  {{ total }} $</h5>
+                <a href="{{ path('app_panier_historique', {'id': panier.id}) }}" class="btn btn-primary">voir le panier</a>
+            </div>
+        </div>
+
+        <div class="container">
+                
         </div>
         {% endif %}
     {% endfor %}

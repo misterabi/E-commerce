@@ -34,4 +34,5 @@ flash:
   failed:
     UndifinedProduct: Le produit n\'existe pas.
     UplaodFile: Le fichier n\'a pas pu être téléchargé.
+    unavailable: Le produit n\'est pas disponible.
   warning:

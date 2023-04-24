@@ -12,23 +12,40 @@
     
     {% set total = 0 %}
     {% for produit in contenuePanier %}
-        <div class="card" style="width: 18rem;">
+        <div class="card text-center mb-3">
             {% for product in produit.Produit %}
-                <p>{{ product.nom }} : Quantite {{ produit.Quantite }} pour {{product.Prix}}$ / totale :{{produit.Quantite * product.Prix}} $</p>
-                {% if show != 1 %}
-                    <a href="{{ path('app_panier_remove', {'id': produit.id}) }}">{{'Product.Delete'|trans}}</a>
-                {% endif %}
+
+                <div class="card-header">
+                    {{ product.nom }} 
+                </div>
+                <div>
+                    <img class="mt-2" src="{{asset('/uploads/'~ product.photo)}}" style="max-width:100px;">
+                </div>
+
+                <div class="card-body">
+                    <p class="card-text"> {{ produit.Quantite }} Produits </p>
+                    <h5 class="card-title"> totale :{{produit.Quantite * product.Prix}} $</h5>
+                </div>
+                <div class="card-footer text-body-secondary">
+                    {% if show != 1 %}
+                        <a class="btn btn-primary" href="{{ path('app_panier_remove', {'id': produit.id}) }}">{{'Product.Delete'|trans}}</a>
+                    {% endif %}
+                </div>
                 {% set total = total + produit.Quantite * product.Prix %}
             {% endfor %}
+            
         </div>
+
     {% endfor %}
-    <p>total : {{ total }} $</p>
+    <p class="fs-2 text-center">total : {{ total }} $</p>
     {% if (show!=1  and total > 0)%}
-        <a href="{{ path('app_stripe',{'somme': total}) }}">{{'Cart.Payement'|trans}}</a>
-    {% else %}
+        <div class="text-center mb-5">
+            <a class="btn btn-success btn-lg" href="{{ path('app_stripe',{'somme': total}) }}">{{'Cart.Payement'|trans}}</a>
+        </div>
+    {% endif %}
+    {% if total == 0 %}
         <p>Votre Panier est vide !</p>
         <p>Veuillez ajouter des produits</p> 
-        
     {% endif %}
 </div>
 {% endblock %}

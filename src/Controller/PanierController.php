@@ -16,6 +16,7 @@ class PanierController extends AbstractController
     #[Route('/panier', name: 'app_panier')]
     public function index(Request $request,EntityManagerInterface $em): Response
     {
+
         $user = $this->getUser();
         if($user == null){
             return $this->redirectToRoute('app_login');
@@ -39,6 +40,7 @@ class PanierController extends AbstractController
         }
 
         $contenuePanier = $panier->getContentPaniers();
+
 
         return $this->render('panier/index.html.twig', [
             'contenuePanier' => $contenuePanier,

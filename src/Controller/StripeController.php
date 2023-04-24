@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Date;
@@ -70,11 +72,16 @@ class StripeController extends AbstractController
 
 
     #[Route('/stripe/success', name: 'stripe_success')]
-    public function success(EntityManagerInterface $em)
+    public function success(EntityManagerInterface $em,Request $request)
     {
         $user = $this->getUser();
         if($user == null){
             return $this->redirectToRoute('app_login');
+        }
+
+        $valeurCookie = $request->cookies->get('Payement');
+        if($valeurCookie == null or $valeurCookie == 'false'){
+            return $this->redirectToRoute('app_produit');
         }
         //update de la quantité des produits
         foreach($user->getPaniers()[$user->getPaniers()->count()-1]->getContentPaniers() as $contentPanier){
@@ -89,7 +96,11 @@ class StripeController extends AbstractController
         $panier->setDateAchat(new \DateTime());
         $em->persist($panier);
         $em->flush();
-        return $this->render('stripe/success.html.twig');
+        $res = $this->render('stripe/success.html.twig');
+        $res->headers->clearCookie('Payement');
+        $cookie = new Cookie('Payement', 'false', time() + 3600);
+        $res->headers->setCookie($cookie);
+        return $res;
     }
 
     #[Route('/stripe/failed', name: 'stripe_failed')]

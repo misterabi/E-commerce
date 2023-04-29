@@ -67,13 +67,16 @@ class ProduitController extends AbstractController
 
         $form = null;
         
-        if($formAjouteProduit->isSubmitted() && $formAjouteProduit->isValid()){ 
+        if($formAjouteProduit->isSubmitted() && $formAjouteProduit->isValid() && $formAjouteProduit->get('quantite')->getData() <= $product->getStock() && $formAjouteProduit->get('quantite')->getData() > 0){ 
             return $this->redirectToRoute('app_ajouter_produit',
             [
                 "id" => $product->getId(),
                 "Quantite" => $formAjouteProduit->get('quantite')->getData()
             ]
-        );
+            );
+        }
+        if($formAjouteProduit->get('quantite')->getData() >= $product->getStock() or $formAjouteProduit->get('quantite')->getData() <= 0){
+            $this->addFlash('danger',$trans->trans('flash.failed.Unavailable'));
         }
 
         if( $this->isGranted('ROLE_ADMIN') or $this->isGranted('ROLE_SUPER_ADMIN')){

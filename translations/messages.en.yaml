@@ -11,6 +11,9 @@ Product:
   Delete: Delete
   Edit: Edit
 
+Quantite: Quantity
+Add : Add
+
 Cart:
   Payement: Purchase
 
@@ -32,5 +35,5 @@ flash:
   failed:
       UplaodFile: The file can't be upload.
       UndifinedProduct: The product doesn't exist.
-      unavailable: The product is not available.
+      Unavailable: The product is not available.
   warning:

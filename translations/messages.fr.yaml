@@ -5,6 +5,9 @@ Stock: Stock
 Photo (JPG,JPEG,PNG): Photo (JPG,JPEG,PNG)
 Save : Sauvegarder
 
+Quantite: Quantité
+Add : Ajouter
+
 Product:
   List: Liste des produits
   Delete: Supprimer
@@ -34,5 +37,5 @@ flash:
   failed:
     UndifinedProduct: Le produit n\'existe pas.
     UplaodFile: Le fichier n\'a pas pu être téléchargé.
-    unavailable: Le produit n\'est pas disponible.
+    Unavailable: Le produit n\'est pas disponible.
   warning:

@@ -58,7 +58,7 @@
             </div>
         {% endfor %}
     </div>
-{% else %}
+{% endif %}
 <div >
     {% for panier in historique %}
         {% if panier.Etat == 1 %}     
@@ -88,6 +88,5 @@
         {% endif %}
     {% endfor %}
 </div> 
-{% endif %}
 
 {% endblock %}

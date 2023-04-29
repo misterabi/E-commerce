@@ -77,11 +77,7 @@ async function checkStatus() {
   switch (paymentIntent.status) {
     case "succeeded":
       showMessage("Payment succeeded!");
-      //set a cookie session to know if the payment is done
-      document.cookie="Payement=true";
-      
-      //make an boolean in a cookie session to know if the payment is done
-      window.location.href = "http://localhost:8000/stripe/success";
+      window.location.href = `http://localhost:8000/stripe/success/${paymentIntent.id}`;
       break;
     case "processing":
       showMessage("Your payment is processing.");

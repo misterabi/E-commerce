@@ -118,7 +118,7 @@ class ProduitController extends AbstractController
         //on recupere le panier courrant de l'utilisateur
         $LastPanier = $user->getPaniers();
         $LastPanier = $LastPanier[count($LastPanier)-1];
-
+        
         $ContentPanier = new ContentPanier();
         $ContentPanier->setPanier($LastPanier);
         $ContentPanier->addProduit($product);

@@ -29,6 +29,9 @@ class Panier
     #[ORM\ManyToOne(inversedBy: 'paniers')]
     private ?Utilisateur $Utilisateur = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $idPayement = null;
+
 
     public function __construct()
     {
@@ -110,6 +113,18 @@ class Panier
     public function __toString(): string
     {
         return $this->id;
+    }
+
+    public function getIdPayement(): ?string
+    {
+        return $this->idPayement;
+    }
+
+    public function setIdPayement(?string $idPayement): self
+    {
+        $this->idPayement = $idPayement;
+
+        return $this;
     }
    
 }

@@ -36,7 +36,6 @@
 <div class="container">
     {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')) %}
         {{form(form)}}
-
         <form action="{{ path('app_delete_produit', {'id': product.id}) }}">
             <button class="btn btn-danger" type="submit">{{'Product.Delete'|trans}}</button>
         </form>

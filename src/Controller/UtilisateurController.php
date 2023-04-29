@@ -26,13 +26,18 @@ class UtilisateurController extends AbstractController
         if( $user->getRoles()[0] == "ROLE_SUPER_ADMIN"){
             $tmps = $em->getRepository(Utilisateur::class)->findAll();
             foreach($tmps as $utilisateur){
-                if($utilisateur->getPaniers()[0]->isEtat() == false){
-                    array_push($users,[$utilisateur,$utilisateur->getPaniers()[0]->getId()]);
+                if($utilisateur->getPaniers()[$utilisateur->getPaniers()->count()-1]->isEtat() == false){
+                    array_push($users,[$utilisateur,$utilisateur->getPaniers()[$utilisateur->getPaniers()->count()-1]->getId()]);
                 }
                 
             }
+
+            //user  avec un panier non validé
             $users = array_values($users);
+            
+            //uuser inscrit sur la platform
             $users_inscrit = $em->getRepository(Utilisateur::class)->findAll();
+
             usort($users_inscrit, function($a, $b) {
                 return $a->getId() <=> $b->getId();
             });

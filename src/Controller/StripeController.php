@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\ContentPanier;
+use App\Entity\Panier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -24,8 +26,9 @@ class StripeController extends AbstractController
         ]);
     }
 
+
     #[Route('/stripe/payement', name: 'stripe_payement')]
-    public function payement()
+    public function payement(EntityManagerInterface $em)
     {
         //recuper la clé api
         $stripeSecretKey = $this->getParameter("stripe_sk");
@@ -39,6 +42,7 @@ class StripeController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
         $panier = $user->getPaniers()[$user->getPaniers()->count()-1];
+        $panier = $em->getRepository(Panier::class)->findOneBy(['Utilisateur' => $user, 'DateAchat' => null]);
         $contenuePanier = $panier->getContentPaniers();
         
 
@@ -49,6 +53,7 @@ class StripeController extends AbstractController
         }
         $total = $total * 100;
 
+        
         try {
             $paymentIntent = \Stripe\PaymentIntent::create([
                 'amount' => $total,
@@ -57,11 +62,19 @@ class StripeController extends AbstractController
                     'enabled' => true,
                 ],
             ]);
-        
+            
+            if($panier->getIdPayement() == null){
+                // Stocker en base dans le panier l'id unique donc ajouter dans l'entity panier un attribut idStripe puis aller dans sucess par rapport a cette id
+                $em->persist($panier->setIdPayement($paymentIntent->id));
+                $em->flush();
+            }
+            
+            
             $output = [
                 "payement Intent" => $paymentIntent,
                 'clientSecret' => $paymentIntent->client_secret,
             ];
+
             return new JsonResponse($output);
         } catch (\Error $e) {
             return new JsonResponse(['error' => $e->getMessage()],500);
@@ -71,27 +84,36 @@ class StripeController extends AbstractController
 
 
 
-    #[Route('/stripe/success', name: 'stripe_success')]
-    public function success(EntityManagerInterface $em,Request $request)
+    #[Route('/stripe/success/{id}', name: 'stripe_success')]
+    public function success(EntityManagerInterface $em, $id)
     {
+        // Récupère en base un panier avec l'utilisateur et l'id unique
+        // Si le panier est non payé -> passe en payé
+
         $user = $this->getUser();
         if($user == null){
             return $this->redirectToRoute('app_login');
         }
-
-        $valeurCookie = $request->cookies->get('Payement');
-        if($valeurCookie == null or $valeurCookie == 'false'){
+        $panier = $em->getRepository(Panier::class)->findOneBy(['Utilisateur' => $user, 'DateAchat' => null]);
+        if($panier == null){
             return $this->redirectToRoute('app_produit');
         }
-        //update de la quantité des produits
-        foreach($user->getPaniers()[$user->getPaniers()->count()-1]->getContentPaniers() as $contentPanier){
+        if($panier->getIdPayement() != $id){
+            return $this->render('stripe/failed.html.twig',[
+                "panierid" => $panier->getIdPayement(),
+                "id" => $id
+            ]);
+        }
+
+        //update de la quantité des produits $user->getPaniers()[$user->getPaniers()->count()-1]->getContentPaniers()
+        $content = $em->getRepository(ContentPanier::class)->findBy(['Panier' => $panier]);
+        foreach($content as $contentPanier){
             foreach($contentPanier->getProduit() as $produit){
 
                 $produit->setStock($produit->getStock() - $contentPanier->getQuantite());
                 $em->persist($produit);
             }
         }
-        $panier = $user->getPaniers()[$user->getPaniers()->count()-1];
         $panier->setEtat(true);
         $panier->setDateAchat(new \DateTime());
         $em->persist($panier);
@@ -104,8 +126,16 @@ class StripeController extends AbstractController
     }
 
     #[Route('/stripe/failed', name: 'stripe_failed')]
-    public function failed()
+    public function failed(EntityManagerInterface $em)
     {
+        $user = $this->getUser();
+        if($user == null){
+            return $this->redirectToRoute('app_login');
+        }
+        $panier = $em->getRepository(Panier::class)->findOneBy(['Utilisateur' => $user, 'DateAchat' => null]);
+        $panier->setIdPayement(null);
+        $em->persist($panier);
+        $em->flush();
         return $this->render('stripe/failed.html.twig');
     }
 

@@ -41,9 +41,12 @@ class PanierController extends AbstractController
 
         $contenuePanier = $panier->getContentPaniers();
 
+        //clear all cookie
+        $cookies = $request->cookies;
 
         return $this->render('panier/index.html.twig', [
             'contenuePanier' => $contenuePanier,
+            'panier' => $panier,
             "show" => false,
         ]);
     }
@@ -77,6 +80,7 @@ class PanierController extends AbstractController
     
         return $this->render('panier/index.html.twig', [
             'contenuePanier' => $contenuePanier,
+            'panier' => $panier,
             'show' => true,
         ]);
     }
